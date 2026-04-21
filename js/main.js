@@ -113,7 +113,7 @@ function generarEnemic() {
     const enemic = new Enemic(pos.x, pos.y, 14);
     enemic.velocitat = velocitatBaseEnemic;
     // Escalar vida segons temps
-    enemic.vidaMaxima = 30 + Math.floor(tempsJoc * 2);
+    enemic.vidaMaxima = 20 + Math.floor(tempsJoc * 1.5);
     enemic.vida = enemic.vidaMaxima;
     enemics.push(enemic);
 }
@@ -242,8 +242,8 @@ function actualitzarJoc() {
     
     // Escalar dificultat cada 10 segons
     if (frameCount % 600 === 0 && frameCount > 0) {
-        spawnRate += 0.5;
-        velocitatBaseEnemic += 0.2;
+        spawnRate += 0.3;            
+        velocitatBaseEnemic += 0.15;
     }
     
     // Actualitzar temps
