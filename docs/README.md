@@ -37,5 +37,8 @@ Prem el botó "Començar" a la pantalla d'inici.
 Mou-te amb WASD o fletxes i sobreviu tant com puguis!
 
 ## Autor
-Enric Rivelles
-Projecte individual per a Entorns de Desenvolupament – Curs 2025-26
+Enric Rivelles.
+
+---
+
+**Projecte individual per a Entorns de Desenvolupament – Curs 2025-26.**
