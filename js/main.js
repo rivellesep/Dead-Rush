@@ -46,16 +46,18 @@ document.addEventListener('DOMContentLoaded', () => {
     let pausa = false;
 
     let tempsJoc = 0;
-    let frameCount = 0;
-    let spawnRate = 1.0;
+    let comptadorFrames = 0;
+    let taxaAparicio = 1.0;
     let velocitatBaseEnemic = 1.5;
 
     const tecles = {
         w: false, a: false, s: false, d: false,
-        up: false, left: false, down: false, right: false
+        amunt: false, esquerra: false, avall: false, dreta: false
     };
 
     // ========== FUNCIONS D'INICIALITZACIÓ I UI ==========
+    
+    /** Crea el catàleg de millores disponibles al joc. */
     function crearCatalegMillores() {
         milloresDisponibles = [
             new Millora('dany_1', 'Més dany', '+10 dany', 'dany', 10),
@@ -70,6 +72,7 @@ document.addEventListener('DOMContentLoaded', () => {
         ];
     }
 
+    /** Actualitza tots els elements de la interfície d'usuari. */
     function actualitzarUI() {
         if (!jugador) return;
         
@@ -85,14 +88,15 @@ document.addEventListener('DOMContentLoaded', () => {
         timerDisplay.textContent = `Temps: ${Math.floor(tempsJoc)}s`;
     }
 
+    /** Inicialitza o reinicia l'estat complet del joc. */
     function inicialitzarJoc() {
         jugador = new Jugador(ample/2, alt/2);
         enemics = [];
         bales = [];
         gemmes = [];
         tempsJoc = 0;
-        frameCount = 0;
-        spawnRate = 1.0;
+        comptadorFrames = 0;
+        taxaAparicio = 1.0;
         velocitatBaseEnemic = 1.5;
         estat = 'jugant';
         pausa = false;
@@ -106,6 +110,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // ========== GENERACIÓ D'ENEMICS ==========
+    
+    /** Crea un nou enemic en una posició aleatòria de la vora del canvas. */
     function generarEnemic() {
         const pos = posicioAleatoriaVora(ample, alt, 30);
         const enemic = new Enemic(pos.x, pos.y, 14);
@@ -116,20 +122,22 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // ========== DISPAR ==========
-    function disparar() {
+    
+    /** Gestiona el tret automàtic del jugador cap a l'enemic més proper. */
+    function processarDispars() {
         if (!jugador || !jugador.potDisparar()) return;
         
         const enemicProper = obtenirEnemicMesProper(jugador, enemics);
         if (!enemicProper) return;
         
-        const angle = angleCapAObjecte(jugador, enemicProper);
-        const numProjectils = jugador.nombreProjectils;
+        const angleBase = angleCapAObjecte(jugador, enemicProper);
+        const nombreProjectils = jugador.nombreProjectils;
         
-        for (let i = 0; i < numProjectils; i++) {
-            let angleFinal = angle;
-            if (numProjectils > 1) {
+        for (let i = 0; i < nombreProjectils; i++) {
+            let angleFinal = angleBase;
+            if (nombreProjectils > 1) {
                 const dispersio = 0.2;
-                angleFinal = angle + (i - (numProjectils-1)/2) * dispersio;
+                angleFinal = angleBase + (i - (nombreProjectils - 1) / 2) * dispersio;
             }
             
             const bala = new Bala(
@@ -144,27 +152,28 @@ document.addEventListener('DOMContentLoaded', () => {
         jugador.disparar();
     }
 
-    // ========== ACTUALITZACIÓ DEL JOC ==========
-    function actualitzarJoc() {
-        if (estat !== 'jugant' || pausa) return;
+    // ========== ACTUALITZACIÓ D'ENTITATS ==========
+    
+    /** Mou el jugador segons les tecles premudes. */
+    function processarMovimentJugador() {
+        let dirX = 0, dirY = 0;
+        if (tecles.w || tecles.amunt) dirY -= 1;
+        if (tecles.s || tecles.avall) dirY += 1;
+        if (tecles.a || tecles.esquerra) dirX -= 1;
+        if (tecles.d || tecles.dreta) dirX += 1;
         
-        let dx = 0, dy = 0;
-        if (tecles.w || tecles.up) dy -= 1;
-        if (tecles.s || tecles.down) dy += 1;
-        if (tecles.a || tecles.left) dx -= 1;
-        if (tecles.d || tecles.right) dx += 1;
-        
-        if (dx !== 0 || dy !== 0) {
-            if (dx !== 0 && dy !== 0) {
-                dx *= 0.707;
-                dy *= 0.707;
+        if (dirX !== 0 || dirY !== 0) {
+            if (dirX !== 0 && dirY !== 0) {
+                dirX *= 0.707;
+                dirY *= 0.707;
             }
-            jugador.moure(dx, dy, { ample, alt });
+            jugador.moure(dirX, dirY, { ample, alt });
         }
-        
         jugador.actualitzar();
-        disparar();
-        
+    }
+
+    /** Actualitza la posició de tots els enemics, bales i gemmes. */
+    function actualitzarEntitats() {
         enemics.forEach(enemic => enemic.actualitzar(jugador));
         
         bales = bales.filter(bala => {
@@ -173,8 +182,13 @@ document.addEventListener('DOMContentLoaded', () => {
         });
         
         gemmes.forEach(gemma => gemma.actualitzar(jugador));
-        
-        // Col·lisions bales-enemics
+    }
+
+    // ========== COL·LISIONS ==========
+    
+    /** Comprova i resol totes les col·lisions del joc. */
+    function processarColisions() {
+        // Bales vs Enemics
         for (let i = bales.length - 1; i >= 0; i--) {
             const bala = bales[i];
             for (let j = enemics.length - 1; j >= 0; j--) {
@@ -192,7 +206,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
         
-        // Col·lisions jugador-enemics
+        // Jugador vs Enemics
         for (let i = enemics.length - 1; i >= 0; i--) {
             const enemic = enemics[i];
             if (detectarColisioRectangleCercle(enemic, jugador)) {
@@ -207,7 +221,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
         
-        // Col·lisions jugador-gemmes
+        // Jugador vs Gemmes
         for (let i = gemmes.length - 1; i >= 0; i--) {
             const gemma = gemmes[i];
             if (detectarColisioCercles(jugador, gemma)) {
@@ -218,26 +232,31 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             }
         }
-        
-        if (frameCount % 30 === 0) {
-            const numEnemics = Math.floor(spawnRate);
+    }
+
+    // ========== GENERACIÓ I DIFICULTAT ==========
+    
+    /** Genera enemics segons la taxa actual d'aparició. */
+    function generarEnemicsPerTemps() {
+        if (comptadorFrames % 30 === 0) {
+            const numEnemics = Math.floor(taxaAparicio);
             for (let i = 0; i < numEnemics; i++) {
                 generarEnemic();
             }
         }
-        
-        if (frameCount % 600 === 0 && frameCount > 0) {
-            spawnRate += 0.5;
-            velocitatBaseEnemic += 0.2;
-        }
-        
-        if (frameCount % 60 === 0) {
-            tempsJoc++;
-        }
-        
-        actualitzarUI();
     }
 
+    /** Incrementa progressivament la dificultat del joc. */
+    function escalarDificultat() {
+        if (comptadorFrames % 600 === 0 && comptadorFrames > 0) {
+            taxaAparicio += 0.5;
+            velocitatBaseEnemic += 0.2;
+        }
+    }
+
+    // ========== PUJADA DE NIVELL ==========
+    
+    /** Pausa el joc i mostra el panell de selecció de millores. */
     function pujarNivell() {
         estat = 'pujantNivell';
         pausa = true;
@@ -270,7 +289,29 @@ document.addEventListener('DOMContentLoaded', () => {
         levelupScreen.classList.remove('hidden');
     }
 
+    // ========== ACTUALITZACIÓ PRINCIPAL DEL JOC ==========
+    
+    /** Funció principal que actualitza tota la lògica del joc en cada frame. */
+    function actualitzarJoc() {
+        if (estat !== 'jugant' || pausa) return;
+        
+        processarMovimentJugador();
+        processarDispars();
+        actualitzarEntitats();
+        processarColisions();
+        generarEnemicsPerTemps();
+        escalarDificultat();
+        
+        if (comptadorFrames % 60 === 0) {
+            tempsJoc++;
+        }
+        
+        actualitzarUI();
+    }
+
     // ========== RENDERITZAT ==========
+    
+    /** Dibuixa tots els elements del joc al canvas. */
     function dibuixar() {
         ctx.clearRect(0, 0, ample, alt);
         
@@ -287,23 +328,27 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // ========== BUCLE PRINCIPAL ==========
+    
+    /** Bucle d'animació principal (executat contínuament per requestAnimationFrame). */
     function bucle() {
         if (estat === 'jugant' && !pausa) {
             actualitzarJoc();
         }
         dibuixar();
-        frameCount++;
+        comptadorFrames++;
         requestAnimationFrame(bucle);
     }
 
     // ========== ESDEVENIMENTS ==========
-    function setupEventListeners() {
+    
+    /** Configura els listeners de teclat i botons. */
+    function configurarEsdeveniments() {
         window.addEventListener('keydown', (e) => {
             const key = e.key.toLowerCase();
-            if (key === 'w' || key === 'arrowup') tecles.up = true;
-            if (key === 's' || key === 'arrowdown') tecles.down = true;
-            if (key === 'a' || key === 'arrowleft') tecles.left = true;
-            if (key === 'd' || key === 'arrowright') tecles.right = true;
+            if (key === 'w' || key === 'arrowup') tecles.amunt = true;
+            if (key === 's' || key === 'arrowdown') tecles.avall = true;
+            if (key === 'a' || key === 'arrowleft') tecles.esquerra = true;
+            if (key === 'd' || key === 'arrowright') tecles.dreta = true;
             if (key === 'w') tecles.w = true;
             if (key === 's') tecles.s = true;
             if (key === 'a') tecles.a = true;
@@ -316,10 +361,10 @@ document.addEventListener('DOMContentLoaded', () => {
         
         window.addEventListener('keyup', (e) => {
             const key = e.key.toLowerCase();
-            if (key === 'w' || key === 'arrowup') tecles.up = false;
-            if (key === 's' || key === 'arrowdown') tecles.down = false;
-            if (key === 'a' || key === 'arrowleft') tecles.left = false;
-            if (key === 'd' || key === 'arrowright') tecles.right = false;
+            if (key === 'w' || key === 'arrowup') tecles.amunt = false;
+            if (key === 's' || key === 'arrowdown') tecles.avall = false;
+            if (key === 'a' || key === 'arrowleft') tecles.esquerra = false;
+            if (key === 'd' || key === 'arrowright') tecles.dreta = false;
             if (key === 'w') tecles.w = false;
             if (key === 's') tecles.s = false;
             if (key === 'a') tecles.a = false;
@@ -336,13 +381,13 @@ document.addEventListener('DOMContentLoaded', () => {
             console.log('Reiniciar clicat');
             gameoverScreen.classList.add('hidden');
             inicialitzarJoc();
-            startScreen.classList.add('hidden'); // Assegurar que no es mostri la pantalla d'inici
+            startScreen.classList.add('hidden');
         });
     }
 
     // ========== INICIAR TOT ==========
-    console.log('Setup event listeners...');
-    setupEventListeners();
+    console.log('Configurant esdeveniments...');
+    configurarEsdeveniments();
     
     console.log('Iniciant bucle...');
     bucle();
