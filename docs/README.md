@@ -36,6 +36,9 @@ Recomanat: Utilitzar l'extensió Live Server de Visual Studio Code per evitar pr
 Prem el botó "Començar" a la pantalla d'inici.
 Mou-te amb WASD o fletxes i sobreviu tant com puguis!
 
+##Video demostratiu[https://drive.google.com/file/d/1maVrNMiF3fEnjiwk_RfqGEdE8mL6M0NV/view?usp=sharing]##
+
+
 ## Autor
 Enric Rivelles.
 
