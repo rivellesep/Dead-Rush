@@ -26,7 +26,6 @@ body {
     width: 100%;
     height: 100%;
     background: #1a1f2e;
-    cursor: none;
 }
 
 /* UI Overlay */
@@ -175,4 +174,104 @@ button:hover {
 .upgrade-option p {
     color: #ecf0f1;
     font-size: 14px;
+}
+
+/* Botó de pausa amb icona */
+#pause-button {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: rgba(0, 0, 0, 0.5);
+    color: white;
+    border: 2px solid white;
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: none;
+    pointer-events: all;
+    z-index: 10;
+    padding: 0;
+}
+
+#pause-button img {
+    width: 60%;
+    height: 60%;
+    object-fit: contain;
+    display: block;
+    margin: auto;
+}
+
+#pause-button:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+/* Pantalles de menú */
+.menu-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-top: 30px;
+}
+
+.menu-buttons button {
+    width: 220px;
+}
+
+/* Pantalla d'ajustos */
+.settings-group {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 300px;
+    margin: 10px 0;
+    color: white;
+    font-size: 16px;
+}
+
+.settings-group label {
+    flex: 1;
+    text-align: left;
+}
+
+.settings-group input[type="range"] {
+    width: 150px;
+}
+
+.settings-group input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+}
+
+/* Pantalla de personalització */
+.customize-options {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin: 20px 0;
+}
+
+.customize-options button {
+    width: 250px;
+}
+
+#camera-preview, #camera-canvas {
+    margin: 15px auto;
+    border: 2px solid white;
+    border-radius: 8px;
+}
+
+/* Pantalla completa (opcional) */
+#game-container:fullscreen {
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: black;
+}
+
+#game-container:fullscreen #game-canvas {
+    width: 100vw;
+    height: 100vh;
 }

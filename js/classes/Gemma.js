@@ -22,7 +22,7 @@ export default class Gemma {
     }
 
     dibuixar(ctx) {
-        ctx.fillStyle = '#2ecc71';
+        ctx.fillStyle = '#00fff7';
         ctx.beginPath();
         ctx.arc(this.x, this.y, this.radi, 0, Math.PI * 2);
         ctx.fill();

@@ -7,7 +7,7 @@ export default class Enemic {
         this.vidaMaxima = 30;
         this.velocitat = 1.5;
         this.danyContacte = 20;
-        this.color = '#e74c3c';
+        this.color = '#008214';
     }
 
     actualitzar(jugador) {
@@ -33,7 +33,7 @@ export default class Enemic {
         
         // Barra de vida
         const ampleVida = (this.vida / this.vidaMaxima) * (this.radi*2);
-        ctx.fillStyle = '#2ecc71';
+        ctx.fillStyle = '#ff0000';
         ctx.fillRect(this.x - this.radi, this.y - this.radi - 8, ampleVida, 4);
     }
 }

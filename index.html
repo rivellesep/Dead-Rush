@@ -24,13 +24,20 @@
                 <div id="level-display">Nivell 1</div>
                 <div id="timer-display">Temps: 0s</div>
             </div>
+            <button id="pause-button" title="Pausa">
+                <img src="assets/img/ajustes_icono.png" alt="Ajustos">
+            </button>
         </div>
 
         <!-- Pantalla d'inici -->
         <div id="start-screen" class="screen">
             <h1>DEAD RUSH</h1>
             <p>Sobrevius tant com puguis</p>
-            <button id="start-button">Començar</button>
+            <div class="menu-buttons">
+                <button id="start-button">Començar</button>
+                <button id="settings-button-start">Ajustos</button>
+                <button id="customize-button">Personalitzar</button>
+            </div>
             <p class="controls">WASD o Fletxes per moure't</p>
         </div>
 
@@ -42,13 +49,78 @@
             <button id="restart-button">Tornar a començar</button>
         </div>
 
-        <!-- Panell de pujada de nivell (millores) -->
+        <!-- Panell de pujada de nivell -->
         <div id="levelup-screen" class="screen hidden">
             <h2>Puja de nivell!</h2>
             <p>Tria una millora:</p>
-            <div id="upgrade-options" class="upgrade-container">
-                <!-- Les opcions s'omplen dinàmicament amb JS -->
+            <div id="upgrade-options" class="upgrade-container"></div>
+        </div>
+
+        <!-- Menú de pausa -->
+        <div id="pause-menu" class="screen hidden">
+            <h2>Pausa</h2>
+            <div class="menu-buttons">
+                <button id="resume-button">Continuar</button>
+                <button id="settings-button-pause">Ajustos</button>
+                <button id="quit-button">Sortir</button>
             </div>
+        </div>
+
+        <!-- Pantalla d'Ajustos -->
+        <div id="settings-screen" class="screen hidden">
+            <h2>Ajustos</h2>
+            <div class="settings-group">
+                <label>Pantalla completa</label>
+                <button id="fullscreen-toggle">Alternar</button>
+            </div>
+            <div class="settings-group">
+                <label>Música</label>
+                <input type="checkbox" id="music-toggle" checked>
+            </div>
+            <div class="settings-group">
+                <label>Efectes de so</label>
+                <input type="checkbox" id="sfx-toggle" checked>
+            </div>
+            <div class="settings-group">
+                <label>Volum música</label>
+                <input type="range" id="music-volume" min="0" max="100" value="50">
+            </div>
+            <div class="settings-group">
+                <label>Volum efectes</label>
+                <input type="range" id="sfx-volume" min="0" max="100" value="70">
+            </div>
+            <button id="back-button-settings">Tornar</button>
+        </div>
+
+        <!-- Pantalla de Personalització -->
+        <div id="customize-screen" class="screen hidden">
+            <h2>Personalitzar</h2>
+
+            <div class="customize-section">
+                <h3>Personatge</h3>
+                <canvas id="preview-canvas" width="200" height="200"></canvas>
+                <div class="customize-buttons">
+                    <button id="upload-image">Pujar imatge</button>
+                    <button id="camera-image">Fer foto</button>
+                    <button id="reset-image">Defecte</button>
+                </div>
+            </div>
+
+            <div class="customize-section">
+                <h3>Zombies</h3>
+                <canvas id="preview-zombie" width="200" height="200"></canvas>
+                <div class="customize-buttons">
+                    <button id="upload-zombie">Pujar imatge</button>
+                    <button id="reset-zombie">Defecte</button>
+                </div>
+            </div>
+
+            <input type="file" id="image-input" accept="image/*" style="display:none">
+            <input type="file" id="zombie-input" accept="image/*" style="display:none">
+            <video id="camera-preview" style="display:none" autoplay playsinline></video>
+            <canvas id="camera-canvas" style="display:none" width="400" height="400"></canvas>
+
+            <button id="back-button-customize">Tornar</button>
         </div>
     </div>
 
